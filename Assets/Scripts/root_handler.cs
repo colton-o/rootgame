@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class root_handler : MonoBehaviour
 {
+    const int PIXEL_THRESHOLD = 20;
     Texture2D texture;
     Sprite sprite;
     Vector2 root_start, root_end;
@@ -54,20 +55,17 @@ public class root_handler : MonoBehaviour
         if (Input.GetButtonUp("Fire1"))
         {
 
-            draw_root
-            (
-                Mathf.RoundToInt(root_start.x),
+            StartCoroutine(draw_root(Mathf.RoundToInt(root_start.x),
                 Mathf.RoundToInt(root_end.x),
                 Mathf.RoundToInt(root_start.y),
                 Mathf.RoundToInt(root_end.y),
-                Color.cyan
-            );
+                Color.cyan));
 
             drag.SetPosition(0, Vector3.zero);
             drag.SetPosition(1, Vector3.zero);
         }
     }
-    void draw_root(int x_start, int x_end, int y_start, int y_end, Color col)
+    IEnumerator draw_root(int x_start, int x_end, int y_start, int y_end, Color col)
     {
         int loopnum = 0;
 
@@ -81,6 +79,10 @@ public class root_handler : MonoBehaviour
         //main draw loop
         while (x != x_end && y != y_end)
         {
+
+
+
+
             //pick length
             int length = Random.Range(5, 10);
 
@@ -100,9 +102,8 @@ public class root_handler : MonoBehaviour
 
             if (x_end > x)
             {
-                Debug.Log(x);
-                Debug.Log(x_end);
-                Debug.Log("X is larger");
+                Debug.Log("X = " + x + "x end =" + x_end);
+                Debug.Log("X end is larger");
                 dir.x = Random.Range(0, 1);
                 gradient.x = Random.Range(1, 5);
             }
@@ -124,19 +125,34 @@ public class root_handler : MonoBehaviour
             //run through length
             while (length != 0)
             {
+                //per gradient render
                 for (int gx = 0; gx <= gradient.x; gx++)
                 {
-                    if (dir.x != 0)
-                        Debug.Log(dir.x);
+                    if (y != y_end)
+                    {
+                        x += Mathf.RoundToInt(dir.x);
+                        texture.SetPixel(x, y, col);
+                        texture.Apply();
+                        Debug.Log("x=" + x + "y=" + y);
+                        yield return new WaitForSeconds(.0001f);
+                    }
+                    else
+                    { break; }
 
-                    x += Mathf.RoundToInt(dir.x);
-                    texture.SetPixel(x, y, col);
                 }
-
                 for (int gy = 0; gy <= gradient.y; gy++)
                 {
-                    y += Mathf.RoundToInt(dir.y);
-                    texture.SetPixel(x, y, col);
+                    if (x != x_end)
+                    {
+                        y += Mathf.RoundToInt(dir.y);
+                        texture.SetPixel(x, y, col);
+                        texture.Apply();
+                        Debug.Log("x=" + x + "y=" + y);
+                        yield return new WaitForSeconds(.0001f);
+                    }
+                    else
+                    { break; }
+
                 }
                 length--;
             }
@@ -145,7 +161,7 @@ public class root_handler : MonoBehaviour
             if (loopnum > 10000)
                 break;
         }
-        texture.Apply();
+
     }
 }
 
