@@ -168,7 +168,7 @@ public class RootSim : MonoBehaviour
             root_end = mapPosition;
             if (clicked_root)
             {
-                if (root_end.y < root_start.y)
+                if (root_end.y < root_start.y && Vector2.Distance(root_end, root_start) < 50)
                     can_root = true;
                 else
                     can_root = false;
@@ -186,7 +186,9 @@ public class RootSim : MonoBehaviour
 
             drag.SetPosition(0, Vector3.zero);
             drag.SetPosition(1, Vector3.zero);
+
             clicked_root = false;
+            can_root = false;
         }
 
         if (Input.GetButton("Fire2"))
