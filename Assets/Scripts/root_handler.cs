@@ -8,6 +8,19 @@ public class root_handler : MonoBehaviour
     Sprite sprite;
     Vector2 root_start, root_end;
     LineRenderer drag;
+
+    enum Type
+    {
+        Sky,
+        Dirt,
+        Rock,
+        Water,
+        Nutrient,
+        Root,
+        RootWater,
+        RootNutrient
+    }
+
     void Start()
     {
         texture = new Texture2D(Screen.width, Screen.height);
