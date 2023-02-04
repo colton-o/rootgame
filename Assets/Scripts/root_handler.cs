@@ -6,6 +6,19 @@ public class root_handler : MonoBehaviour
 {
     Texture2D texture;
     Sprite sprite;
+
+    enum Type
+    {
+        Sky,
+        Dirt,
+        Rock,
+        Water,
+        Nutrient,
+        Root,
+        RootWater,
+        RootNutrient
+    }
+    
     void Start()
     {
         texture = new Texture2D(Screen.width, Screen.height);
