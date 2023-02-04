@@ -19,7 +19,8 @@ public class RootSim : MonoBehaviour
     [SerializeField] private Color rootNutrientColor;
     [SerializeField] private Color seedColor;
     [SerializeField] private Color growthColor;
-
+    [SerializeField] private Color rotColor;
+    
     private cell[,] currentMap;
     private cell[,] previousMap;
     private Texture2D texture2D;
@@ -44,7 +45,8 @@ public class RootSim : MonoBehaviour
         RootWater,
         RootNutrient,
         Seed,
-        Growth
+        Growth,
+        Rot
     }
     void Start()
     {
@@ -159,7 +161,11 @@ public class RootSim : MonoBehaviour
             }
             case Type.Dirt:
             {
-                if (previousMap[x, y + 1].type == Type.Water)
+                if (Random.value < 0.0001f)
+                {
+                    currentMap[x, y].type = Type.Rot;
+                }
+                else if (previousMap[x, y + 1].type == Type.Water)
                 {
                     currentMap[x, y].type = Type.Water;
                 }
@@ -202,7 +208,12 @@ public class RootSim : MonoBehaviour
             }
             case Type.Root:
             {
-                if ((previousMap[x + 1, y].type == Type.RootNutrient && previousMap[x + 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                if (previousMap[x + 1, y].type == Type.Rot || previousMap[x - 1, y].type == Type.Rot ||
+                    previousMap[x, y + 1].type == Type.Rot || previousMap[x, y - 1].type == Type.Rot)
+                {
+                    currentMap[x, y].type = Type.Rot;
+                }
+                else if ((previousMap[x + 1, y].type == Type.RootNutrient && previousMap[x + 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
                     (previousMap[x - 1, y].type == Type.RootNutrient && previousMap[x - 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
                     (previousMap[x, y + 1].type == Type.RootNutrient && previousMap[x, y + 1].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
                     (previousMap[x, y - 1].type == Type.RootNutrient && previousMap[x, y - 1].distanceFromSeed > previousMap[x, y].distanceFromSeed))
@@ -286,6 +297,14 @@ public class RootSim : MonoBehaviour
                 }
                 break;
             }
+            case Type.Rot:
+            {
+                if (Random.value < 0.1f)
+                {
+                    currentMap[x, y].type = Type.Dirt;
+                }
+                break;
+            }
         }
 
         if (y > 0)
@@ -353,6 +372,11 @@ public class RootSim : MonoBehaviour
             case Type.Growth:
             {
                 texture2D.SetPixel(x, y, growthColor);
+                break;
+            }
+            case Type.Rot:
+            {
+                texture2D.SetPixel(x, y, rotColor);
                 break;
             }
         }
