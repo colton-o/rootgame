@@ -318,6 +318,10 @@ public class RootSim : MonoBehaviour
                         {
                             currentMap[x, y].type = Type.Dirt;
                         }
+                        else if (previousMap[x, y + 1].type == Type.Water)
+                        {
+                            currentMap[x, y].type = Type.Water;
+                        }
                         else
                         {
                             currentMap[x, y].type = previousMap[x, y].type;
