@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class root_handler : MonoBehaviour
 {
-    const int PIXEL_THRESHOLD = 20;
+    const int PIXEL_THRESHOLD = 5;
+    const int Dir_distance = 10;
+    const int grad_min = 1;
+    const int grad_max = 25;
     Texture2D texture;
     Sprite sprite;
     Vector2 root_start, root_end;
@@ -77,11 +80,8 @@ public class root_handler : MonoBehaviour
         int x = x_start;
         int y = y_start;
         //main draw loop
-        while (x != x_end && y != y_end)
+        while (Mathf.Abs(x - x_end) > PIXEL_THRESHOLD || Mathf.Abs(y - y_end) > PIXEL_THRESHOLD)
         {
-
-
-
 
             //pick length
             int length = Random.Range(5, 10);
@@ -90,24 +90,24 @@ public class root_handler : MonoBehaviour
             if (y_end > y)
             {
                 dir.y = 1;
-                gradient.y = Random.Range(1, 5);
+                gradient.y = Random.Range(grad_min, grad_max);
             }
             else if (y_end < y)
             {
                 dir.y = -1;
-                gradient.y = Random.Range(1, 5);
+                gradient.y = Random.Range(grad_min, grad_max);
             }
 
 
             if (x_end > x)
             {
                 dir.x = 1;
-                gradient.x = Random.Range(1, 5);
+                gradient.x = Random.Range(grad_min, grad_max);
             }
             else if (x_end < x)
             {
                 dir.x = -1;
-                gradient.x = Random.Range(1, 5);
+                gradient.x = Random.Range(grad_min, grad_max);
             }
 
 
@@ -117,23 +117,20 @@ public class root_handler : MonoBehaviour
             else
                 gradient.x = 1;
 
-            Debug.Log(dir);
+
             //run through length
             while (length != 0)
             {
+                //if (Mathf.Abs(x - x_end) < Dir_distance || Mathf.Abs(y - y_end) < Dir_distance)
+                // break;
                 //per gradient render
                 for (int gx = 0; gx <= gradient.x; gx++)
                 {
-
                     x += (int)dir.x;
                     Debug.Log(dir);
                     texture.SetPixel(x, y, col);
                     texture.Apply();
-                    Debug.Log("x=" + x + "y=" + y);
-                    yield return new WaitForSeconds(.0001f);
-
-
-
+                    yield return new WaitForEndOfFrame();
                 }
                 for (int gy = 0; gy <= gradient.y; gy++)
                 {
@@ -141,10 +138,7 @@ public class root_handler : MonoBehaviour
                     y += (int)dir.y;
                     texture.SetPixel(x, y, col);
                     texture.Apply();
-                    Debug.Log("x=" + x + "y=" + y);
-                    yield return new WaitForSeconds(.0001f);
-
-
+                    yield return new WaitForEndOfFrame();
                 }
                 length--;
             }
@@ -154,6 +148,7 @@ public class root_handler : MonoBehaviour
                 break;
         }
 
+        Debug.Log("BREAK");
     }
 }
 
