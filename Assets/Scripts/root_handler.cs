@@ -69,39 +69,42 @@ public class root_handler : MonoBehaviour
     }
     void draw_root(int x_start, int x_end, int y_start, int y_end, Color col)
     {
-        //pick a direction
-        Vector2 dir;
-        //pick a length
-        int length;
+
+        Vector2 dir = new Vector2(0, 0);
+
 
         Debug.Log(new Vector4(x_start, x_end, y_start, y_end));
+
 
         int x = x_start;
         int y = y_start;
         //main draw loop
         while (x != x_end && y != y_end)
         {
-            texture.SetPixel(x, y, col);
-            while (y != y_end)
-            {
-                if (y > y_end)
-                    y--;
-                if (y < y_end)
-                    y++;
+            //pick length
+            int length = Random.Range(30, 100);
+            //set direction
+            if (y_end > y)
+                dir.y = Random.Range(0, 1);
+            else if (y_end < y)
+                dir.y = Random.Range(-1, 0);
+            else
+                y = 0;
 
+            if (x_end > x)
+                dir.x = Random.Range(0, 1);
+            else if (x_end < x)
+                dir.x = Random.Range(-1, 0);
+            else
+                x = 0;
+            //run through length
+            while (length != 0)
+            {
+                x += Mathf.RoundToInt(dir.x);
+                y += Mathf.RoundToInt(dir.y);
+                length--;
                 texture.SetPixel(x, y, col);
             }
-
-            while (x != x_end)
-            {
-                if (x > x_end)
-                    x--;
-                if (x < x_end)
-                    x++;
-
-                texture.SetPixel(x, y, col);
-            }
-
         }
         texture.Apply();
     }
