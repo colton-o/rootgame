@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 638236387}
-  mapSize: {x: 256, y: 256}
+  mapSize: {x: 128, y: 128}
   skyColor: {r: 0, g: 0.6497364, b: 1, a: 1}
   dirtColor: {r: 0.3490566, g: 0.14526772, b: 0.09714311, a: 1}
   rockColor: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
