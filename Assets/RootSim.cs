@@ -162,6 +162,15 @@ public class RootSim : MonoBehaviour
             drag.SetPosition(0, Vector3.zero);
             drag.SetPosition(1, Vector3.zero);
         }
+        
+        if (Input.GetButton("Fire2"))
+        {
+            if (currentMap[mapPosition.x, mapPosition.y].type == Type.Root)
+            {
+                currentMap[mapPosition.x, mapPosition.y].type = Type.Dirt;
+            }
+
+        }
     }
 
     void FixedUpdate()
