@@ -89,31 +89,27 @@ public class root_handler : MonoBehaviour
             //set direction and gradient
             if (y_end > y)
             {
-                dir.y = Random.Range(0, 1);
+                dir.y = 1;
                 gradient.y = Random.Range(1, 5);
             }
             else if (y_end < y)
             {
-                dir.y = Random.Range(-1, 0);
+                dir.y = -1;
                 gradient.y = Random.Range(1, 5);
             }
-            else
-                y = 0;
+
 
             if (x_end > x)
             {
-                Debug.Log("X = " + x + "x end =" + x_end);
-                Debug.Log("X end is larger");
-                dir.x = Random.Range(0, 1);
+                dir.x = 1;
                 gradient.x = Random.Range(1, 5);
             }
             else if (x_end < x)
             {
-                dir.x = Random.Range(-1, 0);
+                dir.x = -1;
                 gradient.x = Random.Range(1, 5);
             }
-            else
-                x = 0;
+
 
             int grad_dir = Random.Range(0, 1);
             if (grad_dir == 1)
@@ -121,37 +117,33 @@ public class root_handler : MonoBehaviour
             else
                 gradient.x = 1;
 
-
+            Debug.Log(dir);
             //run through length
             while (length != 0)
             {
                 //per gradient render
                 for (int gx = 0; gx <= gradient.x; gx++)
                 {
-                    if (y != y_end)
-                    {
-                        x += Mathf.RoundToInt(dir.x);
-                        texture.SetPixel(x, y, col);
-                        texture.Apply();
-                        Debug.Log("x=" + x + "y=" + y);
-                        yield return new WaitForSeconds(.0001f);
-                    }
-                    else
-                    { break; }
+
+                    x += (int)dir.x;
+                    Debug.Log(dir);
+                    texture.SetPixel(x, y, col);
+                    texture.Apply();
+                    Debug.Log("x=" + x + "y=" + y);
+                    yield return new WaitForSeconds(.0001f);
+
+
 
                 }
                 for (int gy = 0; gy <= gradient.y; gy++)
                 {
-                    if (x != x_end)
-                    {
-                        y += Mathf.RoundToInt(dir.y);
-                        texture.SetPixel(x, y, col);
-                        texture.Apply();
-                        Debug.Log("x=" + x + "y=" + y);
-                        yield return new WaitForSeconds(.0001f);
-                    }
-                    else
-                    { break; }
+
+                    y += (int)dir.y;
+                    texture.SetPixel(x, y, col);
+                    texture.Apply();
+                    Debug.Log("x=" + x + "y=" + y);
+                    yield return new WaitForSeconds(.0001f);
+
 
                 }
                 length--;
