@@ -25,6 +25,7 @@ public class RootSim : MonoBehaviour
     struct cell
     {
         public Type type;
+        public int distanceFromSeed;
     }
         
     enum Type
@@ -61,8 +62,6 @@ public class RootSim : MonoBehaviour
                 }
                 else
                 {
-
-
                     if (y > mapSize.y * 0.75f)
                     {
                         currentMap[x, y].type = Type.Sky;
@@ -98,6 +97,25 @@ public class RootSim : MonoBehaviour
 
             }
         }
+
+        Vector2Int seedPoint = new Vector2Int(64, 64);
+        for (int distance = 0; distance < 50; distance++)
+        {
+            int x = seedPoint.x + distance/2;
+            int y = seedPoint.y - (distance + distance % 2) /2;
+
+            currentMap[x, y].type = Type.Root;
+            currentMap[x, y].distanceFromSeed = distance;
+        }
+        for (int distance = 0; distance < 70; distance++)
+        {
+            int x = seedPoint.x - distance/2;
+            int y = seedPoint.y - (distance + distance % 2) /2;
+
+            currentMap[x, y].type = Type.Root;
+            currentMap[x, y].distanceFromSeed = distance;
+        }
+
     }
 
     void FixedUpdate()
@@ -107,6 +125,7 @@ public class RootSim : MonoBehaviour
             for (int y = 0; y < mapSize.y; y++)
             {
                 previousMap[x, y].type = currentMap[x, y].type;
+                previousMap[x, y].distanceFromSeed = currentMap[x, y].distanceFromSeed;
             }
         }
 
@@ -114,76 +133,175 @@ public class RootSim : MonoBehaviour
         {
             for (int y = 0; y < mapSize.y; y++)
             {
-                if (previousMap[x, y].type == Type.Dirt)
-                {
-                    if (previousMap[x, y + 1].type == Type.Water)
-                    {
-                        currentMap[x, y].type = Type.Water;
-                    }
-                }
-                else if (previousMap[x,y].type == Type.Water)
-                {
-                    if (previousMap[x, y - 1].type == Type.Dirt)
-                    {
-                        currentMap[x, y].type = Type.Dirt;
-                    }
-                }
-                else
-                {
-                    currentMap[x, y].type = previousMap[x, y].type;
-                }
-                
-                
+                SimulateCell(x,y);
                 PaintPixel(x,y);
             }
         }
         texture2D.Apply();
     }
 
+    private void SimulateCell(int x, int y)
+    {
+        switch (currentMap[x, y].type)
+        {
+            case Type.Sky:
+            {
+                currentMap[x, y].type = previousMap[x, y].type;
+                break;
+            }
+            case Type.Dirt:
+            {
+                if (previousMap[x, y + 1].type == Type.Water)
+                {
+                    currentMap[x, y].type = Type.Water;
+                }
+                break;
+            }
+            case Type.Rock:
+            {
+                currentMap[x, y].type = previousMap[x, y].type;
+                break;
+            }
+            case Type.Water:
+            {
+                if (previousMap[x + 1, y].type == Type.Root || previousMap[x - 1, y].type == Type.Root ||
+                    previousMap[x, y + 1].type == Type.Root || previousMap[x, y - 1].type == Type.Root)
+                {
+                    currentMap[x, y].type = Type.Dirt;
+                }
+                else if (previousMap[x, y - 1].type == Type.Dirt)
+                {
+                    currentMap[x, y].type = Type.Dirt;
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
+                break;
+            }
+            case Type.Nutrient:
+            {
+                if (previousMap[x + 1, y].type == Type.Root || previousMap[x - 1, y].type == Type.Root ||
+                    previousMap[x, y + 1].type == Type.Root || previousMap[x, y - 1].type == Type.Root)
+                {
+                    currentMap[x, y].type = Type.Dirt;
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
+                break;
+            }
+            case Type.Root:
+            {
+                if ((previousMap[x + 1, y].type == Type.RootNutrient && previousMap[x + 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x - 1, y].type == Type.RootNutrient && previousMap[x - 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y + 1].type == Type.RootNutrient && previousMap[x, y + 1].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y - 1].type == Type.RootNutrient && previousMap[x, y - 1].distanceFromSeed > previousMap[x, y].distanceFromSeed))
+                {
+                    currentMap[x, y].type = Type.RootNutrient;
+                }
+                else if((previousMap[x + 1, y].type == Type.RootWater && previousMap[x + 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                        (previousMap[x - 1, y].type == Type.RootWater && previousMap[x - 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                        (previousMap[x, y + 1].type == Type.RootWater && previousMap[x, y + 1].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
+                        (previousMap[x, y - 1].type == Type.RootWater && previousMap[x, y - 1].distanceFromSeed > previousMap[x, y].distanceFromSeed))
+                {
+                    currentMap[x, y].type = Type.RootWater;
+                }
+                else if (previousMap[x + 1, y].type == Type.Nutrient || previousMap[x - 1, y].type == Type.Nutrient ||
+                         previousMap[x, y + 1].type == Type.Nutrient || previousMap[x, y - 1].type == Type.Nutrient)
+                {
+                    currentMap[x, y].type = Type.RootNutrient;
+                }
+                else if (previousMap[x + 1, y].type == Type.Water || previousMap[x - 1, y].type == Type.Water ||
+                         previousMap[x, y + 1].type == Type.Water || previousMap[x, y - 1].type == Type.Water)
+                {
+                    currentMap[x, y].type = Type.RootWater;
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
+                break;
+            }
+            case Type.RootNutrient:
+            {
+                if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
+                {
+                    currentMap[x, y].type = Type.Root;
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
+                break;
+            }
+            case Type.RootWater:
+            {
+                if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                    (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
+                {
+                    currentMap[x, y].type = Type.Root;
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
+                break;
+            }
+        }
+        
+    }
+
     private void PaintPixel(int x, int y)
     {
-        switch (currentMap[x,y].type)
-                        {
-                            case Type.Sky:
-                            {
-                                texture2D.SetPixel(x,y,skyColor);
-                                break;
-                            }
-                            case Type.Dirt:
-                            {
-                                texture2D.SetPixel(x,y,dirtColor);
-                                break;
-                            }
-                            case Type.Rock:
-                            {
-                                texture2D.SetPixel(x,y,rockColor);
-                                break;
-                            }
-                            case Type.Water:
-                            {
-                                texture2D.SetPixel(x,y,waterColor);
-                                break;
-                            }
-                            case Type.Nutrient:
-                            {
-                                texture2D.SetPixel(x,y,nutrientColor);
-                                break;
-                            }
-                            case Type.Root:
-                            {
-                                texture2D.SetPixel(x,y,rootColor);
-                                break;
-                            }
-                            case Type.RootNutrient:
-                            {
-                                texture2D.SetPixel(x,y,rootNutrientColor);
-                                break;
-                            }
-                            case Type.RootWater:
-                            {
-                                texture2D.SetPixel(x,y,rootWaterColor);
-                                break;
-                            }
-                        }
+        switch (currentMap[x, y].type)
+        {
+            case Type.Sky:
+            {
+                texture2D.SetPixel(x, y, skyColor);
+                break;
+            }
+            case Type.Dirt:
+            {
+                texture2D.SetPixel(x, y, dirtColor);
+                break;
+            }
+            case Type.Rock:
+            {
+                texture2D.SetPixel(x, y, rockColor);
+                break;
+            }
+            case Type.Water:
+            {
+                texture2D.SetPixel(x, y, waterColor);
+                break;
+            }
+            case Type.Nutrient:
+            {
+                texture2D.SetPixel(x, y, nutrientColor);
+                break;
+            }
+            case Type.Root:
+            {
+                texture2D.SetPixel(x, y, rootColor);
+                break;
+            }
+            case Type.RootNutrient:
+            {
+                texture2D.SetPixel(x, y, rootNutrientColor);
+                break;
+            }
+            case Type.RootWater:
+            {
+                texture2D.SetPixel(x, y, rootWaterColor);
+                break;
+            }
+        }
     }
 }
