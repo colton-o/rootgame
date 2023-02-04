@@ -17,11 +17,16 @@ public class RootSim : MonoBehaviour
     [SerializeField] private Color rootColor;
     [SerializeField] private Color rootWaterColor;
     [SerializeField] private Color rootNutrientColor;
+    [SerializeField] private Color seedColor;
+    [SerializeField] private Color growthColor;
 
     private cell[,] currentMap;
     private cell[,] previousMap;
     private Texture2D texture2D;
 
+    [SerializeField] private int water;
+    [SerializeField] private int nutrient;
+    
     struct cell
     {
         public Type type;
@@ -37,7 +42,9 @@ public class RootSim : MonoBehaviour
         Nutrient,
         Root,
         RootWater,
-        RootNutrient
+        RootNutrient,
+        Seed,
+        Growth
     }
     void Start()
     {
@@ -116,6 +123,7 @@ public class RootSim : MonoBehaviour
             currentMap[x, y].distanceFromSeed = distance;
         }
 
+        currentMap[seedPoint.x, seedPoint.y].type = Type.Seed;
     }
 
     void FixedUpdate()
@@ -226,10 +234,15 @@ public class RootSim : MonoBehaviour
             }
             case Type.RootNutrient:
             {
-                if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
+                if (previousMap[x + 1, y].type == Type.Seed || previousMap[x - 1, y].type == Type.Seed ||
+                    previousMap[x, y + 1].type == Type.Seed || previousMap[x, y - 1].type == Type.Seed)
+                {
+                    currentMap[x, y].type = Type.Root;
+                }
+                else if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
                 {
                     currentMap[x, y].type = Type.Root;
                 }
@@ -241,10 +254,15 @@ public class RootSim : MonoBehaviour
             }
             case Type.RootWater:
             {
-                if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                    (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
+                if (previousMap[x + 1, y].type == Type.Seed || previousMap[x - 1, y].type == Type.Seed ||
+                    previousMap[x, y + 1].type == Type.Seed || previousMap[x, y - 1].type == Type.Seed)
+                {
+                    currentMap[x, y].type = Type.Root;
+                }
+                else if ((previousMap[x + 1, y].type == Type.Root && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x - 1, y].type == Type.Root  && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x, y + 1].type == Type.Root  && previousMap[x, y+ 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
+                         (previousMap[x, y - 1].type == Type.Root  && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
                 {
                     currentMap[x, y].type = Type.Root;
                 }
@@ -254,8 +272,33 @@ public class RootSim : MonoBehaviour
                 }
                 break;
             }
+            case Type.Seed:
+            {
+                if (previousMap[x + 1, y].type == Type.RootWater || previousMap[x - 1, y].type == Type.RootWater ||
+                    previousMap[x, y + 1].type == Type.RootWater || previousMap[x, y - 1].type == Type.RootWater)
+                {
+                    water++;
+                }
+                if (previousMap[x + 1, y].type == Type.RootNutrient || previousMap[x - 1, y].type == Type.RootNutrient ||
+                    previousMap[x, y + 1].type == Type.RootNutrient || previousMap[x, y - 1].type == Type.RootNutrient)
+                {
+                    nutrient++;
+                }
+                break;
+            }
         }
-        
+
+        if (y > 0)
+        {
+            if ((previousMap[x, y - 1].type == Type.Growth || previousMap[x, y - 1].type == Type.Seed)
+                && previousMap[x, y].type != Type.Growth && water > 0 && nutrient > 0)
+            {
+                currentMap[x, y].type = Type.Growth;
+                water--;
+                nutrient--;
+            }
+        }
+
     }
 
     private void PaintPixel(int x, int y)
@@ -300,6 +343,16 @@ public class RootSim : MonoBehaviour
             case Type.RootWater:
             {
                 texture2D.SetPixel(x, y, rootWaterColor);
+                break;
+            }
+            case Type.Seed:
+            {
+                texture2D.SetPixel(x, y, seedColor);
+                break;
+            }
+            case Type.Growth:
+            {
+                texture2D.SetPixel(x, y, growthColor);
                 break;
             }
         }
