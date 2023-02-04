@@ -439,17 +439,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 638236387}
   mapSize: {x: 128, y: 128}
-  skyColor: {r: 0.3160377, g: 0.7612838, b: 1, a: 1}
-  dirtColor: {r: 0.38679248, g: 0.26901135, b: 0.23535958, a: 1}
+  skyColor: {r: 0.5058824, g: 0.6784314, b: 0.78431374, a: 1}
+  dirtColor: {r: 0.5137255, g: 0.4117647, b: 0.3254902, a: 1}
   rockColor: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
-  waterColor: {r: 0.27305093, g: 0.31470278, b: 0.9811321, a: 1}
-  nutrientColor: {r: 1, g: 0.8160748, b: 0.23113209, a: 1}
-  rootColor: {r: 1, g: 1, b: 1, a: 1}
+  waterColor: {r: 0.14901961, g: 0.32941177, b: 0.4862745, a: 1}
+  nutrientColor: {r: 0.6666667, g: 0.42745098, b: 0.6392157, a: 1}
+  rootColor: {r: 0, g: 1, b: 0.77254903, a: 1}
   rootWaterColor: {r: 0.5319509, g: 0.6900154, b: 0.8113208, a: 1}
-  rootNutrientColor: {r: 0.8207547, g: 0.7542772, b: 0.48393556, a: 1}
-  seedColor: {r: 0, g: 0, b: 0, a: 1}
-  growthColor: {r: 0.05550952, g: 0.4433962, b: 0, a: 1}
-  rotColor: {r: 1, g: 0, b: 0, a: 1}
+  rootNutrientColor: {r: 0.7489163, g: 0.66909933, b: 0.7924528, a: 1}
+  seedColor: {r: 0.94509804, g: 0.9098039, b: 0.72156864, a: 1}
+  growthColor: {r: 0.047058824, g: 0.9607843, b: 0.45490196, a: 1}
+  rotColor: {r: 0, g: 0, b: 0, a: 1}
   water: 0
   nutrient: 0
   drag: {fileID: 1080257609}
