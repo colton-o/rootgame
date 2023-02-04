@@ -45,46 +45,59 @@ public class RootSim : MonoBehaviour
         texture2D = new Texture2D(mapSize.x, mapSize.y);
         texture2D.filterMode = FilterMode.Point;
         image.texture = texture2D;
+        
+        InitializeMap();
+    }
 
-        for(int x = 0; x < mapSize.x; x++)
+    private void InitializeMap()
+    {
+        for (int x = 0; x < mapSize.x; x++)
         {
             for (int y = 0; y < mapSize.y; y++)
             {
-                if (y > mapSize.y * 0.75f)
+                if (x == 0 || y == 0 || x == mapSize.x - 1 || y == mapSize.y - 1)
                 {
                     currentMap[x, y].type = Type.Sky;
                 }
                 else
                 {
-                    switch (Random.value)
+
+
+                    if (y > mapSize.y * 0.75f)
                     {
-                        case < 0.75f:
-                        {
-                            currentMap[x, y].type = Type.Dirt;
-                            break;
-                        }
-                        case < 0.8f:
-                        {
-                            currentMap[x, y].type = Type.Rock;
-                            break;
-                        }
-                        case < 0.9f:
-                        {
-                            currentMap[x, y].type = Type.Water;
-                            break;
-                        }
-                        case <= 1f:
-                        {
-                            currentMap[x, y].type = Type.Nutrient;
-                            break;
-                        }
+                        currentMap[x, y].type = Type.Sky;
                     }
-                    
+                    else
+                    {
+                        switch (Random.value)
+                        {
+                            case < 0.75f:
+                            {
+                                currentMap[x, y].type = Type.Dirt;
+                                break;
+                            }
+                            case < 0.8f:
+                            {
+                                currentMap[x, y].type = Type.Rock;
+                                break;
+                            }
+                            case < 0.9f:
+                            {
+                                currentMap[x, y].type = Type.Water;
+                                break;
+                            }
+                            case <= 1f:
+                            {
+                                currentMap[x, y].type = Type.Nutrient;
+                                break;
+                            }
+                        }
+
+                    }
                 }
-                
+
             }
         }
-
     }
 
     void FixedUpdate()
@@ -93,53 +106,84 @@ public class RootSim : MonoBehaviour
         {
             for (int y = 0; y < mapSize.y; y++)
             {
+                previousMap[x, y].type = currentMap[x, y].type;
+            }
+        }
 
-                switch (currentMap[x,y].type)
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            for (int y = 0; y < mapSize.y; y++)
+            {
+                if (previousMap[x, y].type == Type.Dirt)
                 {
-                    case Type.Sky:
+                    if (previousMap[x, y + 1].type == Type.Water)
                     {
-                        texture2D.SetPixel(x,y,skyColor);
-                        break;
-                    }
-                    case Type.Dirt:
-                    {
-                        texture2D.SetPixel(x,y,dirtColor);
-                        break;
-                    }
-                    case Type.Rock:
-                    {
-                        texture2D.SetPixel(x,y,rockColor);
-                        break;
-                    }
-                    case Type.Water:
-                    {
-                        texture2D.SetPixel(x,y,waterColor);
-                        break;
-                    }
-                    case Type.Nutrient:
-                    {
-                        texture2D.SetPixel(x,y,nutrientColor);
-                        break;
-                    }
-                    case Type.Root:
-                    {
-                        texture2D.SetPixel(x,y,rootColor);
-                        break;
-                    }
-                    case Type.RootNutrient:
-                    {
-                        texture2D.SetPixel(x,y,rootNutrientColor);
-                        break;
-                    }
-                    case Type.RootWater:
-                    {
-                        texture2D.SetPixel(x,y,rootWaterColor);
-                        break;
+                        currentMap[x, y].type = Type.Water;
                     }
                 }
+                else if (previousMap[x,y].type == Type.Water)
+                {
+                    if (previousMap[x, y - 1].type == Type.Dirt)
+                    {
+                        currentMap[x, y].type = Type.Dirt;
+                    }
+                }
+                else
+                {
+                    currentMap[x, y].type = previousMap[x, y].type;
+                }
                 
+                
+                PaintPixel(x,y);
             }
         }
         texture2D.Apply();
+    }
+
+    private void PaintPixel(int x, int y)
+    {
+        switch (currentMap[x,y].type)
+                        {
+                            case Type.Sky:
+                            {
+                                texture2D.SetPixel(x,y,skyColor);
+                                break;
+                            }
+                            case Type.Dirt:
+                            {
+                                texture2D.SetPixel(x,y,dirtColor);
+                                break;
+                            }
+                            case Type.Rock:
+                            {
+                                texture2D.SetPixel(x,y,rockColor);
+                                break;
+                            }
+                            case Type.Water:
+                            {
+                                texture2D.SetPixel(x,y,waterColor);
+                                break;
+                            }
+                            case Type.Nutrient:
+                            {
+                                texture2D.SetPixel(x,y,nutrientColor);
+                                break;
+                            }
+                            case Type.Root:
+                            {
+                                texture2D.SetPixel(x,y,rootColor);
+                                break;
+                            }
+                            case Type.RootNutrient:
+                            {
+                                texture2D.SetPixel(x,y,rootNutrientColor);
+                                break;
+                            }
+                            case Type.RootWater:
+                            {
+                                texture2D.SetPixel(x,y,rootWaterColor);
+                                break;
+                            }
+                        }
     }
 }
