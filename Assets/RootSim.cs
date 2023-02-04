@@ -89,22 +89,22 @@ public class RootSim : MonoBehaviour
                     {
                         switch (Random.value)
                         {
-                            case < 0.75f:
+                            case < 0.8f:
                                 {
                                     currentMap[x, y].type = Type.Dirt;
                                     break;
                                 }
-                            case < 0.8f:
+                            case < 0.99f:
                                 {
                                     currentMap[x, y].type = Type.Rock;
                                     break;
                                 }
-                            case < 0.9f:
+                            case < 1f:
                                 {
                                     currentMap[x, y].type = Type.Water;
                                     break;
                                 }
-                            case <= 1f:
+                            case >= 1f:
                                 {
                                     currentMap[x, y].type = Type.Nutrient;
                                     break;
@@ -225,24 +225,55 @@ public class RootSim : MonoBehaviour
 
     private void SimulateCell(int x, int y)
     {
-        if (x > 0 && x < mapSize.x && y > 0 && y < mapSize.y)
+        if (x > 0 && x < mapSize.x - 1 && y > 0 && y < mapSize.y - 1)
         {
             switch (currentMap[x, y].type)
             {
                 case Type.Sky:
                     {
-                        currentMap[x, y].type = previousMap[x, y].type;
-                        break;
-                    }
-                case Type.Dirt:
-                    {
-                        if (Random.value < 0.0001f)
+                        if (Random.value < 0.00001f)
                         {
-                            currentMap[x, y].type = Type.Rot;
+                            currentMap[x, y].type = Type.Water;
                         }
                         else if (previousMap[x, y + 1].type == Type.Water)
                         {
                             currentMap[x, y].type = Type.Water;
+                        }
+                        else
+                        {
+                            currentMap[x, y].type = previousMap[x, y].type;
+                        }
+                        break;
+                    }
+                case Type.Dirt:
+                    {
+                        if (Random.value < 0.00001f)
+                        {
+                            currentMap[x, y].type = Type.Rot;
+                        }
+                        else if (previousMap[x + 1, y].type == Type.Rot || previousMap[x - 1, y].type == Type.Rot ||
+                                 previousMap[x, y + 1].type == Type.Rot || previousMap[x, y - 1].type == Type.Rot)
+                        {
+                            if (Random.value < 0.01f)
+                            {
+                                currentMap[x, y].type = Type.Rot;
+                            }
+                        }
+                        else if (previousMap[x + 1, y].type == Type.Nutrient || previousMap[x - 1, y].type == Type.Nutrient ||
+                                 previousMap[x, y + 1].type == Type.Nutrient || previousMap[x, y - 1].type == Type.Nutrient)
+                        {
+                            if (Random.value < 0.001f)
+                            {
+                                currentMap[x, y].type = Type.Nutrient;
+                            }
+                        }
+                        else if (previousMap[x, y + 1].type == Type.Water)
+                        {
+                            currentMap[x, y].type = Type.Water;
+                        }
+                        else if(Random.value < 0.0001f)
+                        {
+                            currentMap[x, y].type = Type.Nutrient;
                         }
 
                         break;
@@ -262,6 +293,10 @@ public class RootSim : MonoBehaviour
                         else if (previousMap[x, y - 1].type == Type.Dirt)
                         {
                             currentMap[x, y].type = Type.Dirt;
+                        }
+                        else if (previousMap[x, y - 1].type == Type.Sky)
+                        {
+                            currentMap[x, y].type = Type.Sky;
                         }
                         else
                         {
@@ -289,7 +324,10 @@ public class RootSim : MonoBehaviour
                         if (previousMap[x + 1, y].type == Type.Rot || previousMap[x - 1, y].type == Type.Rot ||
                             previousMap[x, y + 1].type == Type.Rot || previousMap[x, y - 1].type == Type.Rot)
                         {
-                            currentMap[x, y].type = Type.Rot;
+                            if (Random.value < 0.5f)
+                            {
+                                currentMap[x, y].type = Type.Rot;
+                            }
                         }
                         else if ((previousMap[x + 1, y].type == Type.RootNutrient &&
                                   previousMap[x + 1, y].distanceFromSeed > previousMap[x, y].distanceFromSeed) ||
