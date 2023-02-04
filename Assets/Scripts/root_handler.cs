@@ -74,9 +74,7 @@ public class root_handler : MonoBehaviour
         Vector2 dir = new Vector2(0, 0);
         Vector2 gradient = new Vector2(0, 0);
 
-
         Debug.Log(new Vector4(x_start, x_end, y_start, y_end));
-
 
         int x = x_start;
         int y = y_start;
@@ -84,8 +82,9 @@ public class root_handler : MonoBehaviour
         while (x != x_end && y != y_end)
         {
             //pick length
-            int length = Random.Range(30, 100);
-            //set direction
+            int length = Random.Range(5, 10);
+
+            //set direction and gradient
             if (y_end > y)
             {
                 dir.y = Random.Range(0, 1);
@@ -101,6 +100,9 @@ public class root_handler : MonoBehaviour
 
             if (x_end > x)
             {
+                Debug.Log(x);
+                Debug.Log(x_end);
+                Debug.Log("X is larger");
                 dir.x = Random.Range(0, 1);
                 gradient.x = Random.Range(1, 5);
             }
@@ -111,11 +113,22 @@ public class root_handler : MonoBehaviour
             }
             else
                 x = 0;
+
+            int grad_dir = Random.Range(0, 1);
+            if (grad_dir == 1)
+                gradient.y = 1;
+            else
+                gradient.x = 1;
+
+
             //run through length
             while (length != 0)
             {
                 for (int gx = 0; gx <= gradient.x; gx++)
                 {
+                    if (dir.x != 0)
+                        Debug.Log(dir.x);
+
                     x += Mathf.RoundToInt(dir.x);
                     texture.SetPixel(x, y, col);
                 }
