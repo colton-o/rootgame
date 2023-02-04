@@ -69,8 +69,10 @@ public class root_handler : MonoBehaviour
     }
     void draw_root(int x_start, int x_end, int y_start, int y_end, Color col)
     {
+        int loopnum = 0;
 
         Vector2 dir = new Vector2(0, 0);
+        Vector2 gradient = new Vector2(0, 0);
 
 
         Debug.Log(new Vector4(x_start, x_end, y_start, y_end));
@@ -85,26 +87,50 @@ public class root_handler : MonoBehaviour
             int length = Random.Range(30, 100);
             //set direction
             if (y_end > y)
+            {
                 dir.y = Random.Range(0, 1);
+                gradient.y = Random.Range(1, 5);
+            }
             else if (y_end < y)
+            {
                 dir.y = Random.Range(-1, 0);
+                gradient.y = Random.Range(1, 5);
+            }
             else
                 y = 0;
 
             if (x_end > x)
+            {
                 dir.x = Random.Range(0, 1);
+                gradient.x = Random.Range(1, 5);
+            }
             else if (x_end < x)
+            {
                 dir.x = Random.Range(-1, 0);
+                gradient.x = Random.Range(1, 5);
+            }
             else
                 x = 0;
             //run through length
             while (length != 0)
             {
-                x += Mathf.RoundToInt(dir.x);
-                y += Mathf.RoundToInt(dir.y);
+                for (int gx = 0; gx <= gradient.x; gx++)
+                {
+                    x += Mathf.RoundToInt(dir.x);
+                    texture.SetPixel(x, y, col);
+                }
+
+                for (int gy = 0; gy <= gradient.y; gy++)
+                {
+                    y += Mathf.RoundToInt(dir.y);
+                    texture.SetPixel(x, y, col);
+                }
                 length--;
-                texture.SetPixel(x, y, col);
             }
+            loopnum += 1;
+
+            if (loopnum > 10000)
+                break;
         }
         texture.Apply();
     }
