@@ -159,7 +159,6 @@ public class RootSim : MonoBehaviour
             drag.SetPosition(0, new Vector3(mouse_world.x, mouse_world.y, -2));
             if (currentMap[mapPosition.x, mapPosition.y].type == Type.Root)
             {
-                Debug.Log("ROOOOT");
                 clicked_root = true;
             }
         }
@@ -509,38 +508,48 @@ public class RootSim : MonoBehaviour
         int x = x_start;
         int y = y_start;
         //main draw loop
-        while (Mathf.Abs(x - x_end) > PIXEL_THRESHOLD || Mathf.Abs(y - y_end) > PIXEL_THRESHOLD)
+        while (currentMap[x_end, y_end].type != Type.Root)
         {
 
             //pick length
-            int length = Random.Range(5, 10);
+            int length = Random.Range(1, 3);
 
             //set direction and gradient
             if (y_end > y)
             {
-                dir.y = 1;
+                dir.y = Random.Range(0, 2);
                 gradient.y = Random.Range(grad_min, grad_max);
             }
             else if (y_end < y)
             {
-                dir.y = -1;
+                dir.y = Random.Range(-1, 1);
+                gradient.y = Random.Range(grad_min, grad_max);
+            }
+            else
+            {
+                dir.y = Random.Range(-1, 2);
                 gradient.y = Random.Range(grad_min, grad_max);
             }
 
 
             if (x_end > x)
             {
-                dir.x = 1;
+                dir.x = Random.Range(0, 2);
                 gradient.x = Random.Range(grad_min, grad_max);
             }
             else if (x_end < x)
             {
-                dir.x = -1;
+                dir.x = Random.Range(-1, 0);
+                gradient.x = Random.Range(grad_min, grad_max);
+            }
+            else
+            {
+                dir.x = Random.Range(-1, 2);
                 gradient.x = Random.Range(grad_min, grad_max);
             }
 
 
-            int grad_dir = Random.Range(0, 1);
+            int grad_dir = Random.Range(0, 2);
             if (grad_dir == 1)
                 gradient.y = 1;
             else
@@ -583,7 +592,10 @@ public class RootSim : MonoBehaviour
             loopnum += 1;
 
             if (loopnum > 10000)
+            {
+                Debug.Log("Oof looks like we got some infinate loop action happening :(");
                 break;
+            }
         }
 
         Debug.Log("BREAK");
