@@ -94,21 +94,25 @@ public class RootSim : MonoBehaviour
                             case < 0.8f:
                                 {
                                     currentMap[x, y].type = Type.Dirt;
+                                    currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
                             case < 0.99f:
                                 {
                                     currentMap[x, y].type = Type.Rock;
+                                    currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
                             case < 1f:
                                 {
                                     currentMap[x, y].type = Type.Water;
+                                    currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
                             case >= 1f:
                                 {
                                     currentMap[x, y].type = Type.Nutrient;
+                                    currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
                         }
@@ -120,7 +124,7 @@ public class RootSim : MonoBehaviour
         }
 
         Vector2Int seedPoint = new Vector2Int(64, 64);
-        for (int distance = 0; distance < 50; distance++)
+        for (int distance = 1; distance < 50; distance++)
         {
             int x = seedPoint.x + distance / 2;
             int y = seedPoint.y - (distance + distance % 2) / 2;
@@ -128,7 +132,7 @@ public class RootSim : MonoBehaviour
             currentMap[x, y].type = Type.Root;
             currentMap[x, y].distanceFromSeed = distance;
         }
-        for (int distance = 0; distance < 70; distance++)
+        for (int distance = 1; distance < 70; distance++)
         {
             int x = seedPoint.x - distance / 2;
             int y = seedPoint.y - (distance + distance % 2) / 2;
@@ -138,6 +142,8 @@ public class RootSim : MonoBehaviour
         }
 
         currentMap[seedPoint.x, seedPoint.y].type = Type.Seed;
+        currentMap[seedPoint.x, seedPoint.y].distanceFromSeed = 0;
+
     }
 
     private void Update()
@@ -337,6 +343,7 @@ public class RootSim : MonoBehaviour
                             if (Random.value < 0.5f)
                             {
                                 currentMap[x, y].type = Type.Rot;
+                                currentMap[x, y].distanceFromSeed = 10000;
                             }
                         }
                         else if ((previousMap[x + 1, y].type == Type.RootNutrient &&
@@ -372,19 +379,15 @@ public class RootSim : MonoBehaviour
                         {
                             currentMap[x, y].type = Type.RootWater;
                         }
-                        else if (!(((previousMap[x + 1, y].type == Type.Root || previousMap[x + 1, y].type == Type.RootNutrient || previousMap[x + 1, y].type == Type.RootWater)
-                                     && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x - 1, y].type == Type.Root || previousMap[x - 1, y].type == Type.RootNutrient || previousMap[x - 1, y].type == Type.RootWater)
-                                     && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y + 1].type == Type.Root || previousMap[x, y + 1].type == Type.RootNutrient || previousMap[x, y + 1].type == Type.RootWater)
-                                     && previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y - 1].type == Type.Root || previousMap[x, y - 1].type == Type.RootNutrient || previousMap[x, y - 1].type == Type.RootWater)
-                                     && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    (previousMap[x + 1, y].type == Type.Seed) || (previousMap[x - 1, y].type == Type.Seed) || (previousMap[x, y + 1].type == Type.Seed) || (previousMap[x, y - 1].type == Type.Seed)))
+                        else if (!(previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
                         {
                             if (Random.value < 0.5f)
                             {
                                 currentMap[x, y].type = Type.Dirt;
+                                currentMap[x, y].distanceFromSeed = 10000;
                             }
                         }
                         else
@@ -400,6 +403,7 @@ public class RootSim : MonoBehaviour
                             previousMap[x, y + 1].type == Type.Rot || previousMap[x, y - 1].type == Type.Rot)
                         {
                             currentMap[x, y].type = Type.Rot;
+                            currentMap[x, y].distanceFromSeed = 10000;
                         }
                         else if (previousMap[x + 1, y].type == Type.Seed || previousMap[x - 1, y].type == Type.Seed ||
                                 previousMap[x, y + 1].type == Type.Seed || previousMap[x, y - 1].type == Type.Seed)
@@ -417,19 +421,15 @@ public class RootSim : MonoBehaviour
                         {
                             currentMap[x, y].type = Type.Root;
                         }
-                        else if (!(((previousMap[x + 1, y].type == Type.Root || previousMap[x + 1, y].type == Type.RootNutrient || previousMap[x + 1, y].type == Type.RootWater)
-                                     && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x - 1, y].type == Type.Root || previousMap[x - 1, y].type == Type.RootNutrient || previousMap[x - 1, y].type == Type.RootWater)
-                                     && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y + 1].type == Type.Root || previousMap[x, y + 1].type == Type.RootNutrient || previousMap[x, y + 1].type == Type.RootWater)
-                                     && previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y - 1].type == Type.Root || previousMap[x, y - 1].type == Type.RootNutrient || previousMap[x, y - 1].type == Type.RootWater)
-                                     && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    (previousMap[x + 1, y].type == Type.Seed) || (previousMap[x - 1, y].type == Type.Seed) || (previousMap[x, y + 1].type == Type.Seed) || (previousMap[x, y - 1].type == Type.Seed)))
+                        else if (!(previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
                         {
                             if (Random.value < 0.5f)
                             {
                                 currentMap[x, y].type = Type.Dirt;
+                                currentMap[x, y].distanceFromSeed = 10000;
                             }
                         }
                         else
@@ -445,6 +445,7 @@ public class RootSim : MonoBehaviour
                             previousMap[x, y + 1].type == Type.Rot || previousMap[x, y - 1].type == Type.Rot)
                         {
                             currentMap[x, y].type = Type.Rot;
+                            currentMap[x, y].distanceFromSeed = 10000;
                         }
                         else if (previousMap[x + 1, y].type == Type.Seed || previousMap[x - 1, y].type == Type.Seed ||
                                 previousMap[x, y + 1].type == Type.Seed || previousMap[x, y - 1].type == Type.Seed)
@@ -462,24 +463,21 @@ public class RootSim : MonoBehaviour
                         {
                             currentMap[x, y].type = Type.Root;
                         }
-                        else if (!(((previousMap[x + 1, y].type == Type.Root || previousMap[x + 1, y].type == Type.RootNutrient || previousMap[x + 1, y].type == Type.RootWater)
-                                     && previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x - 1, y].type == Type.Root || previousMap[x - 1, y].type == Type.RootNutrient || previousMap[x - 1, y].type == Type.RootWater)
-                                     && previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y + 1].type == Type.Root || previousMap[x, y + 1].type == Type.RootNutrient || previousMap[x, y + 1].type == Type.RootWater)
-                                      && previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    ((previousMap[x, y - 1].type == Type.Root || previousMap[x, y - 1].type == Type.RootNutrient || previousMap[x, y - 1].type == Type.RootWater)
-                                     && previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed) ||
-                                    (previousMap[x + 1, y].type == Type.Seed) || (previousMap[x - 1, y].type == Type.Seed) || (previousMap[x, y + 1].type == Type.Seed) || (previousMap[x, y - 1].type == Type.Seed)))
+                        else if (!(previousMap[x + 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x - 1, y].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x, y + 1].distanceFromSeed < previousMap[x, y].distanceFromSeed ||
+                                   previousMap[x, y - 1].distanceFromSeed < previousMap[x, y].distanceFromSeed))
                         {
                             if (Random.value < 0.5f)
                             {
                                 currentMap[x, y].type = Type.Dirt;
+                                currentMap[x, y].distanceFromSeed = 10000;
                             }
                         }
                         else
                         {
                             currentMap[x, y].type = previousMap[x, y].type;
+                            currentMap[x, y].distanceFromSeed = previousMap[x, y].distanceFromSeed;
                         }
 
                         break;
@@ -535,7 +533,7 @@ public class RootSim : MonoBehaviour
                 }
             case Type.Dirt:
                 {
-                    texture2D.SetPixel(x, y, dirtColor);
+                    texture2D.SetPixel(x, y, dirtColor * ((float)y / (float)mapSize.y + 0.75f));
                     break;
                 }
             case Type.Rock:
@@ -555,7 +553,7 @@ public class RootSim : MonoBehaviour
                 }
             case Type.Root:
                 {
-                    texture2D.SetPixel(x, y, rootColor);
+                    texture2D.SetPixel(x, y, rootColor * (1f - currentMap[x,y].distanceFromSeed / 200f));
                     break;
                 }
             case Type.RootNutrient:
@@ -649,7 +647,7 @@ public class RootSim : MonoBehaviour
                 gradient.x = 1;
 
 
-            int distanceToSeed = currentMap[x, y].distanceFromSeed++;
+            int distanceToSeed = currentMap[x, y].distanceFromSeed;
 
             //run through length
             while (length != 0)
@@ -662,29 +660,51 @@ public class RootSim : MonoBehaviour
                     x += (int)dir.x;
                     if (x >= 0 && x < mapSize.x)
                     {
-                        if (currentMap[x, y].type != Type.Root && currentMap[x, y].type != Type.RootNutrient && currentMap[x, y].type != Type.RootWater)// && currentMap[x, y].distanceFromSeed < distanceToSeed))
+                        distanceToSeed++;
+                        if (currentMap[x, y].type == Type.Root || currentMap[x, y].type == Type.RootNutrient || currentMap[x, y].type == Type.RootWater)
+                        {
+                            if (currentMap[x, y].distanceFromSeed > distanceToSeed)
+                            {
+                                currentMap[x, y].distanceFromSeed = distanceToSeed;
+                            }
+                            else
+                            {
+                                distanceToSeed = currentMap[x, y].distanceFromSeed;
+                            }
+                        }
+                        else
                         {
                             currentMap[x, y].type = Type.Root;
-                            distanceToSeed += 2;
                             currentMap[x, y].distanceFromSeed = distanceToSeed;
                         }
                     }
-                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForFixedUpdate();
                 }
+                distanceToSeed++;
                 for (int gy = 0; gy <= gradient.y; gy++)
                 {
-
                     y += (int)dir.y;
                     if (y >= 0 && y < mapSize.y)
                     {
-                        if (currentMap[x, y].type != Type.Root && currentMap[x, y].type != Type.RootNutrient && currentMap[x, y].type != Type.RootWater)// && currentMap[x, y].distanceFromSeed < distanceToSeed))
+                        distanceToSeed++;
+                        if (currentMap[x, y].type == Type.Root || currentMap[x, y].type == Type.RootNutrient || currentMap[x, y].type == Type.RootWater)
+                        {    
+                            if (currentMap[x, y].distanceFromSeed > distanceToSeed)
+                            {
+                                currentMap[x, y].distanceFromSeed = distanceToSeed;
+                            }
+                            else
+                            {
+                                distanceToSeed = currentMap[x, y].distanceFromSeed;
+                            }
+                        }
+                        else
                         {
                             currentMap[x, y].type = Type.Root;
-                            distanceToSeed += 2;
                             currentMap[x, y].distanceFromSeed = distanceToSeed;
                         }
                     }
-                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForFixedUpdate();
                 }
                 length--;
             }
