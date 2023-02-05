@@ -549,6 +549,13 @@ public class RootSim : MonoBehaviour
                 && previousMap[x, y].type != Type.Growth && water > 0 && nutrient > 0)
             {
                 currentMap[x, y].type = Type.Growth;
+                if (y > (mapSize.y * 0.75f) + 3)
+                {
+                    if(Random.value < 0.25f)
+                    {
+                        drawLeaf(x,y);
+                    }
+                }
                 water--;
                 nutrient--;
             }
@@ -750,5 +757,46 @@ public class RootSim : MonoBehaviour
                 break;
             }
         }
+    }
+
+    void drawLeaf(int xpos, int height)
+    {
+        Debug.Log("LEAF!");
+        int x, y, dir, length;
+        if (Random.value < 0.5f)
+            dir = 1;
+        else
+            dir = -1;
+
+        length = Random.Range(1, 8);
+        x = xpos + (dir * length);
+        y = height;
+        for (int i = 1; i <= 3; i++)
+        {
+            switch (i)
+            {
+                case 1:
+                    for (int j = -1; j <= 1; j++)
+                        currentMap[x + i, y + j].type = Type.Growth;
+                    break;
+                case 2:
+                    for (int j = -2; j <= 2; j++)
+                        currentMap[x + i, y + j].type = Type.Growth;
+                    break;
+                case 3:
+                    currentMap[x + i, y].type = Type.Growth;
+                    break;
+            }
+            
+        }
+
+        for (; length != 0; length --)
+        {
+            x = xpos + (dir * length);
+            currentMap[x, y].type = Type.Growth;
+            //leaf
+           
+        }
+       
     }
 }
