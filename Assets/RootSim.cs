@@ -36,6 +36,8 @@ public class RootSim : MonoBehaviour
     const int grad_min = 1;
     const int grad_max = 5;
 
+    Vector2Int seedPosition = new Vector2Int(64, 80);
+    
     bool can_root, clicked_root;
     public GameObject gameOver;
 
@@ -77,9 +79,13 @@ public class RootSim : MonoBehaviour
         {
             for (int y = 0; y < mapSize.y; y++)
             {
-                if (x == 0 || y == 0 || x == mapSize.x - 1 || y == mapSize.y - 1)
+                if (x == 0 || x == mapSize.x - 1 || y == mapSize.y - 1)
                 {
                     currentMap[x, y].type = Type.Sky;
+                }
+                else if (y == 0)
+                {
+                    currentMap[x, y].type = Type.Rock;
                 }
                 else
                 {
@@ -91,15 +97,43 @@ public class RootSim : MonoBehaviour
                     {
                         switch (Random.value)
                         {
-                            case < 0.8f:
+                            case < 0.9f:
                                 {
-                                    currentMap[x, y].type = Type.Dirt;
+                                    if (y < mapSize.y * 0.1f)
+                                    {
+                                        if (Random.value < 0.5f)
+                                        {
+                                            currentMap[x, y].type = Type.Water;
+                                        }
+                                        else
+                                        {
+                                            currentMap[x, y].type = Type.Dirt;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentMap[x, y].type = Type.Dirt;
+                                    }
                                     currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
                             case < 0.99f:
                                 {
-                                    currentMap[x, y].type = Type.Rock;
+                                    if (y > mapSize.y * 0.5f)
+                                    {
+                                        if (Random.value > 0.25f)
+                                        {
+                                            currentMap[x, y].type = Type.Dirt;
+                                        }
+                                        else
+                                        {
+                                            currentMap[x, y].type = Type.Rock;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        currentMap[x, y].type = Type.Rock;
+                                    }
                                     currentMap[x, y].distanceFromSeed = 10000;
                                     break;
                                 }
@@ -123,32 +157,32 @@ public class RootSim : MonoBehaviour
             }
         }
 
-        Vector2Int seedPoint = new Vector2Int(64, 64);
-        for (int distance = 1; distance < 50; distance++)
+        
+        for (int distance = 1; distance < 10; distance++)
         {
-            int x = seedPoint.x + distance / 2;
-            int y = seedPoint.y - (distance + distance % 2) / 2;
+            int x = seedPosition.x + distance / 2;
+            int y = seedPosition.y - (distance + distance % 2) / 2;
 
             currentMap[x, y].type = Type.Root;
             currentMap[x, y].distanceFromSeed = distance;
         }
-        for (int distance = 1; distance < 70; distance++)
+        for (int distance = 1; distance < 10; distance++)
         {
-            int x = seedPoint.x - distance / 2;
-            int y = seedPoint.y - (distance + distance % 2) / 2;
+            int x = seedPosition.x - distance / 2;
+            int y = seedPosition.y - (distance + distance % 2) / 2;
 
             currentMap[x, y].type = Type.Root;
             currentMap[x, y].distanceFromSeed = distance;
         }
 
-        currentMap[seedPoint.x, seedPoint.y].type = Type.Seed;
-        currentMap[seedPoint.x, seedPoint.y].distanceFromSeed = 0;
+        currentMap[seedPosition.x, seedPosition.y].type = Type.Seed;
+        currentMap[seedPosition.x, seedPosition.y].distanceFromSeed = 0;
 
     }
 
     private void Update()
     {
-        if (currentMap[63, 63].type != Type.Root && currentMap[65, 63].type != Type.Root && currentMap[64, 63].type != Type.Root)
+        if (currentMap[seedPosition.x - 1, seedPosition.y - 1].type != Type.Root && currentMap[seedPosition.x + 1, seedPosition.y - 1].type != Type.Root && currentMap[seedPosition.x, seedPosition.y - 1].type != Type.Root)
         {
             gameOver.SetActive(true);
         }
@@ -243,7 +277,7 @@ public class RootSim : MonoBehaviour
             {
                 case Type.Sky:
                     {
-                        if (Random.value < 0.00001f)
+                        if (Random.value < 0.0001f)
                         {
                             currentMap[x, y].type = Type.Water;
                         }
